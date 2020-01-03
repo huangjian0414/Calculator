@@ -45,11 +45,12 @@ enum CalculatorBrain {
         case .error:
             return "Error"
         }
-        guard let value = Double(result) else {
+        guard Double(result) != nil else {
             return "Error"
         }
-        return formatter.string(from: NSNumber(value: value))!
+        return result.limitDecimalNumber(limit: 8)
     }
+
     //MARK: - 下面模拟 2 + 3 + 4 = 的操作
     //MARK: - 点击了数字，根据当前状态做对应操作
     private func apply(num: Int) -> CalculatorBrain{
@@ -209,7 +210,27 @@ extension String {
         let decNumber = NSDecimalNumber(string: doubleString)
         return decNumber.stringValue
     }
-
+    //MARK: - 限制小数点后面的位数
+    func limitDecimalNumber(limit: Int) -> String {
+        let futureString = self
+        var flag = 0
+        let limited = limit
+        let count = futureString.count - 1
+        var i = count
+        while i >= 0 {
+            if futureString[futureString.index(futureString.startIndex, offsetBy: i)] == "." {
+                if flag > limited {
+                    let index = futureString.index(futureString.startIndex, offsetBy: i+1+limited)
+                    let sub = futureString[futureString.startIndex..<index]
+                    return String(sub)
+                }
+                break
+            }
+            flag += 1
+            i -= 1
+        }
+        return self
+    }
 }
 //MARK: - 根据左右的数 进行加减乘除操作 并返回结果
 extension CalculatorButtonItem.Op {
@@ -226,6 +247,7 @@ extension CalculatorButtonItem.Op {
         case .divide: result = right == 0 ? nil : left / right
         case .equal: fatalError()
         }
-        return result.map { String($0) }?.decimalNumber()
+        let str = result.map { String($0) }
+        return str?.decimalNumber()
     }
 }
