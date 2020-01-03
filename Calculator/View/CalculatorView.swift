@@ -32,15 +32,39 @@ struct CalculatorButton: View {
 
 //MARK: - 输入框
 struct CalculatorText: View {
+    @ObservedObject var model: CalculatorModel
+
     var body: some View {
         HStack(){
             Spacer()
-            Text("0")
+            Text(model.brain.output)
                 .font(.system(size: ScaleFrame(float: 76)))
             .minimumScaleFactor(0.5)
                 .padding([.trailing,.leading],ScaleFrame(float: 18))
             .lineLimit(1)
             .foregroundColor(Color("mytextcolor"))
         }
+    }
+}
+
+struct HistoryView: View {
+    ///@ObservedObject 的用处和 @State 非常相似，从名字看来它是来修饰一个对象的，这个对象可以给多个独立的 View 使用。如果你用 @ObservedObject 来修饰一个对象，那么那个对象必须要实现 ObservableObject 协议，然后用 @Published 修饰对象里属性，表示这个属性是需要被 SwiftUI 监听的
+    @ObservedObject var model: CalculatorModel
+    var body: some View {
+        VStack {
+            if model.totalCount == 0 {
+                Text("没有履历")
+            } else {
+                HStack {
+                    Text("履历").font(.headline)
+                    Text("\(model.historyDetail)").lineLimit(nil)
+                }
+                HStack {
+                    Text("显示").font(.headline)
+                    Text("\(model.brain.output)")
+                }
+                Slider(value: $model.slidingIndex, in: 0...Float(model.totalCount), step: 1)
+            }
+        }.padding()
     }
 }

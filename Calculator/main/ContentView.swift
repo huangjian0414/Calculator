@@ -11,11 +11,20 @@ import SwiftUI
 struct ContentView: View {
     /// 简单做一下屏幕适配(整体进行缩放)
     //let scale: CGFloat = UIScreen.main.bounds.width/414
+    @EnvironmentObject var model: CalculatorModel
+    
+    /// 使用 @State 修饰器我们可以关联出 View 的状态. SwiftUI 将会把使用过 @State 修饰器的属性存储到一个特殊的内存区域，并且这个区域和 View struct 是隔离的. 当 @State 装饰过的属性发生了变化，SwiftUI 会根据新的属性值重新创建视图
+    @State private var editingHistory = false
     
     var body: some View {
         VStack(spacing: ScaleFrame(float: 12)) {
             Spacer()
-            CalculatorText()
+            Button("操作履历: \(model.history.count)") {
+                self.editingHistory = true
+            }.sheet(isPresented: $editingHistory) {
+                HistoryView(model: self.model)
+            }
+            CalculatorText(model: model)
             CalculatorButtonPad()
                 .padding(.bottom)
 
@@ -36,7 +45,7 @@ struct ContentView_Previews: PreviewProvider {
 //MARK: - 水平多个按钮
 struct CalculatorButtonRow: View {
     let row: [CalculatorButtonItem]
-    
+    @EnvironmentObject var model: CalculatorModel
     var body: some View {
         HStack {
             ForEach(row, id: \.self) { item in
@@ -46,7 +55,7 @@ struct CalculatorButtonRow: View {
                     backgroundColorName: item.backgroundColorName,
                     titleColorName: item.titleColorName,
                     action: {
-                        
+                        self.model.apply(item: item)
                 })
             }
         }
