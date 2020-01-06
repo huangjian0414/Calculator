@@ -33,16 +33,24 @@ struct CalculatorButton: View {
 //MARK: - 输入框
 struct CalculatorText: View {
     @ObservedObject var model: CalculatorModel
-
+    @State private var isShowAlert = false
     var body: some View {
         HStack(){
             Spacer()
             Text(model.brain.output)
                 .font(.system(size: ScaleFrame(float: 76)))
-            .minimumScaleFactor(0.5)
+                .minimumScaleFactor(0.5)
                 .padding([.trailing,.leading],ScaleFrame(float: 18))
-            .lineLimit(1)
-            .foregroundColor(Color("mytextcolor"))
+                .lineLimit(1)
+                .foregroundColor(Color("mytextcolor"))
+                .onTapGesture {
+                    self.isShowAlert = true
+            }.alert(isPresented: self.$isShowAlert) {  Alert.init(title: Text(model.historyDetail+model.brain.output), primaryButton: Alert.Button.cancel(Text("取消"), action: {
+                    
+                }), secondaryButton: Alert.Button.default(Text("复制"), action: {
+                    UIPasteboard.general.string = self.model.historyDetail+self.model.brain.output
+                }))
+            }
         }
     }
 }

@@ -19,6 +19,7 @@ struct ContentView: View {
     var body: some View {
         VStack(spacing: ScaleFrame(float: 12)) {
             Spacer()
+            /// 当用户 使用手势关闭 HistoryView 时，SwiftUI 会通过 $editingHistory 这个 Binding 把值设回 false。
             Button("操作履历: \(model.history.count)") {
                 self.editingHistory = true
             }.sheet(isPresented: $editingHistory) {

@@ -9,7 +9,8 @@
 import Foundation
 
 class CalculatorModel: ObservableObject {
-    
+    //ObservableObject 协议要求实现类型是 class，它只有一个需要实现的属性:objectWillChange。在数据将要发生改变时，这个属性用来向外进行 “广播”， 它的订阅者 (一般是 View 相关的逻辑) 在收到通知后，对 View 进行刷新
+    // @Published，编译器将会帮我们自动完成ObservableObject 需要实现的事情
     @Published var brain: CalculatorBrain = .left("0") //默认状态
     @Published var history: [CalculatorButtonItem] = [] //存储操作
     
