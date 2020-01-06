@@ -48,7 +48,7 @@ enum CalculatorBrain {
         guard Double(result) != nil else {
             return "Error"
         }
-        return result.limitDecimalNumber(limit: 8)
+        return result
     }
 
     //MARK: - 下面模拟 2 + 3 + 4 = 的操作
@@ -59,14 +59,14 @@ enum CalculatorBrain {
         /// 1. 点击了2  ---  刚开始输入数字  比如本项目例子 默认状态是.left("0") ,所以你再点击数字会走这里。假如你点击的是2
         case .left(let left):
             /// 还没有输入运算符号，所以还是.left状态. apply里的操作会返回字符串 2(开头就是0，处理掉)。，这时候return了当前的状态为.left("2")
-            return .left(left.apply(num: num))
+            return .left(left.apply(num: num).limitDecimalNumber(limit: 8))
         /// 3. 点击了3 ---  刚开始输入右侧数字 ， 当前状态会变为.leftOpRight(left: 2, op: +, right: 3)
             
         /// 5 . 点击了4 --- 当前状态会变为.leftOpRight(left: 5, op: +, right: 4)
         case .leftOp(let left, let op):
             return .leftOpRight(left: left, op: op, right: "0".apply(num: num))
         case .leftOpRight(let left, let op, let right):
-            return .leftOpRight(left: left, op: op, right: right.apply(num: num))
+            return .leftOpRight(left: left, op: op, right: right.apply(num: num).limitDecimalNumber(limit: 8))
         case .error:
             return .left("0".apply(num: num))
         }
@@ -205,9 +205,7 @@ extension String {
     
     //MARK: - 去除小数点后无效0
     func decimalNumber() -> String? {
-        let conversionValue = Double(self)
-        let doubleString = String(format: "%lf", conversionValue!)
-        let decNumber = NSDecimalNumber(string: doubleString)
+        let decNumber = NSDecimalNumber(string: self)
         return decNumber.stringValue
     }
     //MARK: - 限制小数点后面的位数
@@ -247,7 +245,6 @@ extension CalculatorButtonItem.Op {
         case .divide: result = right == 0 ? nil : left / right
         case .equal: fatalError()
         }
-        let str = result.map { String($0) }
-        return str?.decimalNumber()
+        return result.map { String($0) }?.limitDecimalNumber(limit: 8).decimalNumber()
     }
 }

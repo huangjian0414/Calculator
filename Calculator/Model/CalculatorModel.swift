@@ -18,6 +18,17 @@ class CalculatorModel: ObservableObject {
     
     
     func apply(item: CalculatorButtonItem) {
+        if history.last == CalculatorButtonItem.op(.equal){//上一次点击了等于号
+            switch item { // 且这次点击的是数字，则清零一下
+            case .digit(_):
+                brain = brain.apply(item: CalculatorButtonItem.command(.clear))
+                history.append(CalculatorButtonItem.command(.clear))
+                break
+            default:
+                break
+            }
+        }
+        
         brain = brain.apply(item: item) // 点击操作
         history.append(item)
         
